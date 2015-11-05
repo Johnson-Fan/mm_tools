@@ -16,6 +16,8 @@ NXP_PARAMETERS = -g -2 -vendor=NXP -pLPC11U14/201 -wire=winUSB -s50 -flash-drive
 LPCLINK_FIRM ?= LPCXpressoWIN.enc
 
 
+# Install cable driver for Linux
+# http://guqian110.github.io/pages/2014/03/27/install_ise_modelsim_on_ubuntu.html
 .PHONY: download reflash load
 
 download:
