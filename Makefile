@@ -13,7 +13,8 @@ HARDWARE_NAME	= mm
 isedir  ?= /home/Xilinx/14.6/ISE_DS
 xil_env ?= . $(isedir)/settings$(shell getconf LONG_BIT).sh &>/dev/null
 NXP_PARAMETERS = -g -2 -vendor=NXP -pLPC11U14/201 -wire=winUSB -s50 -flash-driver=LPC11_12_13_32K_4K.cfx
-LPCLINK_FIRM ?= LPCXpressoWIN.enc
+LPCXPRESSODIR ?= /usr/local/lpcxpresso_7.9.2_493/lpcxpresso/bin
+LPCLINK_FIRM ?= $(LPCXPRESSODIR)/LPCXpressoWIN.enc
 
 
 # Install cable driver for Linux
@@ -48,9 +49,9 @@ load: $(HARDWARE_NAME).bit
 	@rm -f $(BATCHFILE)
 
 reflash_lpclink: mcu.axf erase_lpclink
-	(while !(sleep 0.5 && crt_emu_lpc11_13_nxp -flash-load-exec $< $(NXP_PARAMETERS)) do : ; done;)
+	(while !(sleep 0.5 && $(LPCXPRESSODIR)/crt_emu_lpc11_13_nxp -flash-load-exec $< $(NXP_PARAMETERS)) do : ; done;)
 
 erase_lpclink:
 	-(dfu-util -d 0x0471:0xdf55 -c 0 -t 2048 -R -D $(LPCLINK_FIRM) &&  sleep 1)
-	(while ! (sleep 0.5 && crt_emu_lpc11_13_nxp -flash-erase $(NXP_PARAMETERS)); do : ; done;)
+	(while ! (sleep 0.5 && $(LPCXPRESSODIR)/crt_emu_lpc11_13_nxp -flash-erase $(NXP_PARAMETERS)); do : ; done;)
 
