@@ -22,8 +22,8 @@ LPCLINK_FIRM ?= $(LPCXPRESSODIR)/LPCXpressoWIN.enc
 .PHONY: download reflash load
 
 download:
-	wget http://downloads.canaan-creative.com/software/avalon4/mm/latest/mm.mcs -O ./mm.mcs
-	wget http://downloads.canaan-creative.com/software/avalon4/mm/latest/mm.bit -O ./mm.bit
+	wget http://downloads.canaan-creative.com/software/avalon6/mm/latest/mm.mcs -O ./mm.mcs
+	wget http://downloads.canaan-creative.com/software/avalon6/mm/mcu/latest/mcu.axf -O ./mcu.axf
 
 # Bitstream rules
 # TODO: how to setCable -baud 12000000
@@ -47,6 +47,13 @@ load: $(HARDWARE_NAME).bit
 	echo exit		>> $(BATCHFILE)
 	/bin/bash -c '$(xil_env) && impact -batch $(BATCHFILE)'
 	@rm -f $(BATCHFILE)
+
+reflash_ulink2: mcu.axf erase_ulink2
+	(while ! (sleep 0.5 && $(LPCXPRESSODIR)/crt_emu_cm_redlink -flash-load-exec $< $(NXP_PARAMETERS)); do : ; done;)
+
+erase_ulink2:
+	-(killall -s 9 redlinkserv && sleep 1)
+	(while ! (sleep 0.5 && $(LPCXPRESSODIR)/crt_emu_cm_redlink -flash-erase $(NXP_PARAMETERS)); do : ; done;)
 
 reflash_lpclink: mcu.axf erase_lpclink
 	(while !(sleep 0.5 && $(LPCXPRESSODIR)/crt_emu_lpc11_13_nxp -flash-load-exec $< $(NXP_PARAMETERS)) do : ; done;)
