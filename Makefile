@@ -48,6 +48,16 @@ load: $(HARDWARE_NAME).bit
 	/bin/bash -c '$(xil_env) && impact -batch $(BATCHFILE)'
 	@rm -f $(BATCHFILE)
 
+erase:
+	echo setmode -bs	>> $(BATCHFILE)
+	echo setcable -p auto	>> $(BATCHFILE)
+	echo identify		>> $(BATCHFILE)
+	echo attachFlash -p 1 -spi W25Q80BV		>> $(BATCHFILE)
+	echo erase -p 1 -o -spionly			>> $(BATCHFILE)
+	echo exit		>> $(BATCHFILE)
+	/bin/bash -c '$(xil_env) && impact -batch $(BATCHFILE)'
+	@rm -f $(BATCHFILE)
+
 reflash_ulink2: mcu.axf erase_ulink2
 	(while ! (sleep 0.5 && $(LPCXPRESSODIR)/crt_emu_cm_redlink -flash-load-exec $< $(NXP_PARAMETERS)); do : ; done;)
 
